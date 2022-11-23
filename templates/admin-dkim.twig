@@ -9,7 +9,7 @@
     message: publicKey is empty ? _t('DKIM_PUBLIC_KEY_NOT_SET') : _t('DKIM_PUBLIC_KEY_SET',{key:publicKey,domain:domain})}
 ) }}
 
-<form action="{{ url({method:"admindkim"}) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+<form action="{{ url({handler:"admindkim"}) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
     {{ include('@bazar/inputs/text.twig',{
         field: {
             name: 'domain',
