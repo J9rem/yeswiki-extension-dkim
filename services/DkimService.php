@@ -233,16 +233,16 @@ class DkimService
         }
     }
 
-    public function configDKIM(PHPMailer $mailer): ?PHPMailer
+    public function configDKIM($mailer)
     {
-        $data = $this->getFirstAvailableSignature();
-        if (empty($data) || !$this->isUsable($data['domain'])){
-            return $mailer;
+        if (!empty($mailer) && $mailer instanceof PHPMailer){
+            $data = $this->getFirstAvailableSignature();
+            if (!empty($data) && $this->isUsable($data['domain'])){
+                $mailer->DKIM_domain = $data['domain'];
+                $mailer->DKIM_selector = $data['selector'];
+                $mailer->DKIM_private_string = $data['privateKey'];
+            }
         }
-        $mailer->DKIM_domain = $data['domain'];
-        $mailer->DKIM_selector = $data['selector'];
-        $mailer->DKIM_private_string = $data['privateKey'];
-        return $mailer;
     }
 
     public function isUsable(string $domain): bool
