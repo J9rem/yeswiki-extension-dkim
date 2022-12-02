@@ -3,11 +3,48 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code. #}
 
+{{ include_css('tools/dkim/styles/dkim.css') }}
+
+{% if message %}
+    {{ include('@templates/alert-message.twig',{
+        type:'danger',
+        message: message}
+    ) }}
+{% endif %}
 
 {{ include('@templates/alert-message.twig',{
-    type:publicKey is empty ? 'warning' : 'info',
-    message: publicKey is empty ? _t('DKIM_PUBLIC_KEY_NOT_SET') : _t('DKIM_PUBLIC_KEY_SET',{key:publicKey,domain:domain})}
+    type:publicKey is empty ? 'warning' : 'info force-break-word',
+    message: publicKey is empty ? _t('DKIM_PUBLIC_KEY_NOT_SET') : _t('DKIM_PUBLIC_KEY_SET',{key:publicKey,domain:domain,selector:selector})}
 ) }}
+
+{% if publicKey is not empty %}
+    <form action="{{ url({handler:"admindkim"}) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+    {{ include('@bazar/inputs/radio.twig',{
+        field: {
+            name: 'activate',
+            propertyName: 'activate',
+            label: _t('DKIM_ACTIVATION_STATUS'),
+            required: false
+        },
+        options: {
+            true: _t('YES'),
+            false: _t('NO')
+        },
+        value: activated ? 'true' : 'false'
+    }) }}
+        <div class="control-group form-group">
+            <div class="controls col-sm-9">
+                <button type="submit" class="btn btn-primary">{{ _t('DKIM_UPDATE') }}</button>
+            </div>
+        </div>
+    </form>
+    {% if not isUsable %}
+        {{ include('@templates/alert-message.twig',{
+            type:'danger',
+            message: _t('DKIM_PUBLIC_KEY_NOTUSABLE',{domain:domain})
+        }) }}
+    {% endif %}
+{% endif %}
 
 <form action="{{ url({handler:"admindkim"}) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
     {{ include('@bazar/inputs/text.twig',{
@@ -16,6 +53,7 @@
             subType: 'text',
             pattern: "(?:[!#-'*+/-9=?A-Z^-~-]+\.[!#-'*+/-9=?A-Z^-~-]+)*",
             label: _t('DKIM_DOMAIN'),
+            required: true
         },
         value: domain
     }) }}
@@ -25,13 +63,52 @@
             subType: 'text',
             pattern: "[A-Za-z]+",
             label: _t('DKIM_SELECTOR'),
+            required: true
         },
         value: selector
     }) }}
+    {% if canGenerateKeys %}
+        <button type="button" class="btn btn-secondary-2 btn-xs" data-toggle="collapse" data-target="#keysBlock">
+            <span class="block-see"><span class="fas fa-angle-down"></span> {{ _t('DKIM_SEE_KEYS_BLOCK') }}</span>
+            <span class="block-hide"><span class="fas fa-angle-up"></span> {{ _t('DKIM_HIDE_KEYS_BLOCK') }}</span>
+        </button>
+        <div id="keysBlock" class="collapse">
+            {% block keysBlock %}
+                {{ include('@templates/alert-message.twig',{
+                    type:'info',
+                    message: _t('DKIM_KEYS_FORM_INFO') 
+                 }) }}
+                {{ include('@bazar/inputs/textarea.twig',{
+                    field: {
+                        name: 'privateKey',
+                        syntax: 'nohtml',
+                        numRows: 15,
+                        label: _t('DKIM_PRIVATE_KEY'),
+                        required: not canGenerateKeys
+                    }
+                }) }}
+                {{ include('@bazar/inputs/textarea.twig',{
+                    field: {
+                        name: 'publicKey',
+                        syntax: 'nohtml',
+                        numRows: 8,
+                        label: _t('DKIM_PUBLIC_KEY'),
+                        required: not canGenerateKeys
+                    }
+                }) }}
+            {% endblock %}
+        </div>
+    {% else %}
+        {{ block('keysBlock') }}
+    {% endif %}
     <div class="control-group form-group">
         <div class="controls col-sm-9">
             <button type="submit" class="btn btn-primary">{{ _t('DKIM_UPDATE') }}</button>
             <a class="btn btn-xs btn-default" href="{{ url({method:''}) }}">{{ _t('BAZ_ANNULER') }}</a>
+            {% if publicKey is not empty %}<button type="submit" class="btn btn-danger" form="deleteform">{{ _t('DELETE') }}</button>{% endif %}
         </div>
     </div>
+</form>
+<form id="deleteform" action="{{ url({handler:"admindkim"}) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+    <input type="hidden" name="delete" value="1"/>
 </form>

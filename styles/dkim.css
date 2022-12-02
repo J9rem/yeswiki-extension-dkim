@@ -1,0 +1,20 @@
+/*
+ * This file is part of the YesWiki Extension dkim.
+ *
+ * Authors : see README.md file that was distributed with this source code.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+button[data-toggle="collapse"][aria-expanded="true"] .block-see {
+    display:none;
+}
+
+button[data-toggle="collapse"]:not([aria-expanded="true"]) .block-hide {
+    display:none;
+}
+
+.force-break-word {
+    word-break: break-all;
+}

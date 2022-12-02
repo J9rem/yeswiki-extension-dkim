@@ -36,7 +36,7 @@ Lorqu'une clé DKIM est enregistrée dans la base de données, il est possible d
 
 ## Utilisation
 
-IL n'y a rien de particuliers à faire car une fois l'extension installée, la clé générée et active et le champ DNS correctement enregistré dans les paramètres DNS de votre hébergement, les e-mails envoyés par le wiki auront la signature DKIM.
+Il n'y a rien de particuliers à faire car une fois l'extension installée, la clé générée et active et le champ DNS correctement enregistré dans les paramètres DNS de votre hébergement, les e-mails envoyés par le wiki auront la signature DKIM.
 
 <div style="text-align:center;">
 
