@@ -45,7 +45,7 @@ class DkimService
         $selector = '';
         $activated = false;
         $data = $this->getFirstAvailableSignature();
-        if (!empty($data)){
+        if (!empty($data)) {
             list(
                 'publicKey' =>$publicKey,
                 'domain'=>$domain,
@@ -66,13 +66,13 @@ class DkimService
             '=',
             '='
         );
-        if (!empty($signatures)){
+        if (!empty($signatures)) {
             $firstSignature = array_shift($signatures);
-            $dataDecoded = json_decode($firstSignature['value'],true);
-            if (is_array($dataDecoded)){
+            $dataDecoded = json_decode($firstSignature['value'], true);
+            if (is_array($dataDecoded)) {
                 $keys = array_keys($dataDecoded);
                 sort($keys);
-                if ($keys == ['activated','domain','privateKey','publicKey','selector']){
+                if ($keys == ['activated','domain','privateKey','publicKey','selector']) {
                     return $dataDecoded;
                 }
             }
@@ -150,16 +150,16 @@ class DkimService
             '=',
             '='
         );
-        if (!empty($signatures) && is_array($signatures)){
+        if (!empty($signatures) && is_array($signatures)) {
             $firstSignatureFound = empty($domainToKeep);
-            foreach($signatures as $signature){
+            foreach ($signatures as $signature) {
                 if (
-                    $firstSignatureFound || 
+                    $firstSignatureFound ||
                     (
                         $domainToKeep != $signature['resource'] &&
-                        ($firstSignatureFound = true) // assign directly 
+                        ($firstSignatureFound = true) // assign directly
                     )
-                    ){
+                ) {
                     $this->tripleStore->delete(
                         $signature['resource'],
                         $signature['property'],
@@ -169,7 +169,7 @@ class DkimService
                     );
                 }
             }
-            
+
             $signatures = $this->tripleStore->getMatching(
                 null,
                 self::TRIPLE_PROPERTY,
@@ -179,9 +179,9 @@ class DkimService
                 '='
             );
             if (!empty($signatures) && (
-                    empty($domainToKeep) ||
-                    count($signatures) != 1
-                )){
+                empty($domainToKeep) ||
+                count($signatures) != 1
+            )) {
                 throw new Exception('Not all signatures were deleted !');
             }
         }
@@ -193,7 +193,7 @@ class DkimService
     public function setState(bool $activate): array
     {
         $data = $this->getFirstAvailableSignature();
-        if (!empty($data)){
+        if (!empty($data)) {
             $data['activated'] = $activate;
             $this->update($data);
         }
@@ -209,14 +209,14 @@ class DkimService
             '',
             ''
         );
-        if (empty($previousData)){
+        if (empty($previousData)) {
             if ($this->tripleStore->create(
                 $data['domain'],
                 self::TRIPLE_PROPERTY,
                 json_encode($data),
                 '',
                 ''
-            ) != 0 ){
+            ) != 0) {
                 throw new Exception("Error creating the signature into database");
             }
         } else {
@@ -227,7 +227,7 @@ class DkimService
                 json_encode($data),
                 '',
                 ''
-            ) != 0 ){
+            ) != 0) {
                 throw new Exception("Error updating the signature into database");
             }
         }
@@ -235,9 +235,9 @@ class DkimService
 
     public function configDKIM($mailer)
     {
-        if (!empty($mailer) && $mailer instanceof PHPMailer){
+        if (!empty($mailer) && $mailer instanceof PHPMailer) {
             $data = $this->getFirstAvailableSignature();
-            if (!empty($data) && $this->isUsable($data['domain'])){
+            if (!empty($data) && ($data['activated'] === true) && $this->isUsable($data['domain'])) {
                 $mailer->DKIM_domain = $data['domain'];
                 $mailer->DKIM_selector = $data['selector'];
                 $mailer->DKIM_private_string = $data['privateKey'];
@@ -249,13 +249,13 @@ class DkimService
     {
         return !empty($domain) &&
             $this->params->has('contact_from') &&
-            substr($this->params->get('contact_from'),-strlen("@$domain")) == "@$domain";
+            substr($this->params->get('contact_from'), -strlen("@$domain")) == "@$domain";
     }
 
     public function extractKey(string $rawKey): string
     {
-        if (preg_match('/^\\s*-{5}BEGIN [A-Z ]+ KEY-{5}\s*([A-Za-z0-9+\/=\s]+)\s*-{5}END [A-Z ]+ KEY-{5}\s*$/',$rawKey,$matches)){
-            return str_replace([' ',"\n","\r"],'',$matches[1]);
+        if (preg_match('/^\\s*-{5}BEGIN [A-Z ]+ KEY-{5}\s*([A-Za-z0-9+\/=\s]+)\s*-{5}END [A-Z ]+ KEY-{5}\s*$/', $rawKey, $matches)) {
+            return str_replace([' ',"\n","\r"], '', $matches[1]);
         } else {
             throw new NotAKey("This this not a key in PEM format");
         }
