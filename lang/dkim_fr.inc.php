@@ -26,7 +26,7 @@ return [
     'DKIM_PUBLIC_KEY' => 'Clé publique DKIM',
     'DKIM_PUBLIC_KEY_NOT_SET' => 'La clé publique DKIM n\'est pas définie',
     'DKIM_PUBLIC_KEY_NOTUSABLE' => 'La clé publique DKIM est n\'est pas utlisé car pour ceci, le wiki doit avoir configuré le paramètre `contact_from` dans la page GererConfig et cette adresse e-mail doit avoir le même nom de domain que `%{domain}`',
-    'DKIM_PUBLIC_KEY_SET' => 'La clé publique DKIM est : %{key}<br/>Paramètre DNS à utiliser pour le domaine %{domain}:<br/>TYPE <b>TXT</b><br/>NAME <b>%{selector}.%{domain}</b><br/>VALUE <b>"v=DKIM1;k=rsa;p=%{key}"</b><br/>N\'activer la clé qu\'une fois le DNS à jour !',
+    'DKIM_PUBLIC_KEY_SET' => 'La clé publique DKIM est : %{key}<br/>Paramètre DNS à utiliser pour le domaine %{domain}:<br/>TYPE <b>TXT</b><br/>NAME <b>%{selector}._domainkey.%{domain}</b><br/>VALUE <b>"v=DKIM1;k=rsa;p=%{key}"</b><br/>N\'activer la clé qu\'une fois le DNS à jour !',
     'DKIM_HIDE_KEYS_BLOCK' => 'Masquer cette zone',
     'DKIM_SEE_KEYS_BLOCK' => 'Saisir manuellement les clés DKIM',
     'DKIM_SELECTOR' => 'Sélecteur pour le champ DKIM',
