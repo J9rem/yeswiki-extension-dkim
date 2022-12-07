@@ -254,7 +254,7 @@ class DkimService
 
     public function extractKey(string $rawKey): string
     {
-        if (preg_match('/^\\s*-{5}BEGIN [A-Z ]+ KEY-{5}\s*([A-Za-z0-9+\/=\s]+)\s*-{5}END [A-Z ]+ KEY-{5}\s*$/', $rawKey, $matches)) {
+        if (preg_match('/^\\s*-{5}BEGIN [A-Z ]+ KEY-{5}\\s*([A-Za-z0-9+\\/=\\s]+)\\s*-{5}END [A-Z ]+ KEY-{5}\\s*$/', $rawKey, $matches)) {
             return str_replace([' ',"\n","\r"], '', $matches[1]);
         } else {
             throw new NotAKey("This this not a key in PEM format");
